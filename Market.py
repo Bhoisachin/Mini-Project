@@ -6,21 +6,14 @@ from datetime import date
 import yfinance as yf
 import pandas as pd
 import time as t
-import ollama
-
+import google.generativeai as genai
+genai.configure(api_key="Enter your API KEY")
 st.header('MARKET.AI')
-def AI(que=''):
+def AI(que='Hello MARKET.AI'):
     st.success('listning....')
-    response=ollama.chat(model='gemma:2b',messages=[
- {
-    'role':'assistant',
-    'content':que,
-
- },])
-    result=response['message']['content']
-    return result
-
-
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(que)
+    return response.text
 
 def question_recognizer(qur=st.text_input('enter the prompe')):
     
@@ -29,7 +22,7 @@ def question_recognizer(qur=st.text_input('enter the prompe')):
 with st.spinner('in progress...'):
  t.sleep(5)
 
-def process_question( DF_que):
+def process_question( DF_que=''):
     convert = re.sub('[^a-zA-Z]', ' ', DF_que).lower().split() 
     os.makedirs('csvfile', exist_ok=True)   
     for stock_name, stock_symbol in stock_name_list:
@@ -43,7 +36,10 @@ def process_question( DF_que):
             else:
                 return st.warning(' opration is not found')
     else:
-        return st.success(AI(DF_que))
+        if not DF_que:
+          return st.success(AI())
+        else:
+            return st.success(AI(DF_que))
        
 def  handle_close_operation(stock_name,stock_symbol):
     file_path = f'csvfile/{stock_name}NS_close.csv'
