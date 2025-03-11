@@ -4,3 +4,4 @@ pandas
 yfinance
 google-generativeai
 numpy
+ dotenv
